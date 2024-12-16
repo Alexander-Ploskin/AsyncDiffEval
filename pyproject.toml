@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "asyncdiffeval"
+version = "0.1.0"
+description = ""
+authors = ["Alexander Ploskin"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+accelerate = "^1.2.1"
+diffusers = "^0.31.0"
+matplotlib = "^3.10.0"
+munch = "^4.0.0"
+numpy = "^2.2.0"
+opencv-python = "^4.10.0.84"
+pillow = "^11.0.0"
+pycocoevalcap = "^1.2"
+pyyaml = "^6.0.2"
+scipy = "^1.14.1"
+torch = "^2.5.1"
+torchvision = "^0.20.1"
+tqdm = "^4.67.1"
+transformers = "^4.47.0"
+pandas = "^2.2.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
