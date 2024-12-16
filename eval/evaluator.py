@@ -25,7 +25,7 @@ class Evaluator:
         self.seed = seed
         self.num_warm_up_steps = num_warm_up_steps
     
-    def evaluate(self):
+    def evaluate(self, results_path):
         df = pd.DataFrame(columns=['steps', 'avg_score', 'std_score', 'avg_time', 'std_time'])
         
         self._warm_up()
@@ -40,7 +40,7 @@ class Evaluator:
                 frames = self._generate(image, steps, self.num_warm_up_steps)
                 finish = time.time()
                 times.append(finish - start)
-                scores.append(self.clip.get_score(frames))
+                scores.append(self.clip.get_score(frames, image_path))
             
             avg_score = np.mean(scores)
             std_score = np.std(scores)
@@ -49,26 +49,27 @@ class Evaluator:
 
             df[len(df)] = [steps, avg_score, std_score, avg_time, std_time]
         
-        self.df.to_csv('results.csv')
+        self.df.to_csv(results_path)
         return self.df
-            
     
     def _generate(self, image, num_inference_steps, num_warm_up_steps):
         torch.manual_seed(self.seed)
         torch.cuda.manual_seed_all(self.seed)
-        self.reset_state(warm_up=num_warm_up_steps)
+        if self.async_diff is not None:
+            self.async_diff.reset_state(warm_up=num_warm_up_steps)
         return self.pipeline(
             image, 
             decode_chunk_size=8,
             num_inference_steps=num_inference_steps
         ).frames[0]
                 
-        
     def _warm_up(self):
         images = self._get_images()
-        for _ in range(0, 50):
-            self._generate(images[0], 50, 1)
+        for _ in range(0, 1):
+            image = load_image(images[0])
+            self._generate(image, 5, 1)
         
     def _get_images(self):
         images_dir = Path(self.images_dir)
-        return sorted(list(images_dir.glob("data/*.jpg")))
+        images = sorted(list(images_dir.glob("*.jpg")))
+        return [str(image.absolute()) for image in images]

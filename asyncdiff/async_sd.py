@@ -44,7 +44,7 @@ class ModulePlugin(object):
 
 class AsyncDiff(object):
     def __init__(self, pipeline, model_n=2, stride=1, warm_up=1, time_shift=False):
-        dist.init_process_group("nccl")
+        dist.init_process_group("nccl", world_size=model_n + stride - 1)
         if not dist.get_rank(): assert model_n + stride - 1 == dist.get_world_size(), "[ERROR]: The strategy is not compatible with the number of devices. (model_n + stride - 1) should be equal to world_size."
         assert stride==1 or stride==2, "[ERROR]: The stride should be set as 1 or 2"
         self.model_n = model_n
