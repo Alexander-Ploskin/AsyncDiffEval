@@ -13,9 +13,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=str, default='stabilityai/stable-video-diffusion-img2vid-xt')   
     parser.add_argument("--seed", type=int, default=20)
-    parser.add_argument("--model_n", type=int, default=4)
-    parser.add_argument("--stride", type=int, default=2)
-    parser.add_argument("--warm_up", type=int, default=1)
+    parser.add_argument("--model_n", type=int, default=2)
+    parser.add_argument("--stride", type=int, default=1)
+    parser.add_argument("--warm_up", type=int, default=3)
     parser.add_argument("--time_shift", type=bool, default=False)
     parser.add_argument("--scheduler", type=str, choices=['ddpm', 'euler_discrete'])
     parser.add_argument("--max_steps", type=int, default=50)
@@ -54,7 +54,8 @@ if __name__ == "__main__":
         async_diff=async_diff,
         clip=clip,
         seed=args.seed,
-        num_warm_up_steps=3
+        num_warm_up_steps=3,
+        max_images=args.max_images
     )
     
     evaluator.evaluate(args.results_path)

@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import time
 from diffusers.utils import load_image
+import os
 
 
 class Evaluator:
@@ -15,7 +16,8 @@ class Evaluator:
         async_diff,
         clip,
         seed,
-        num_warm_up_steps
+        num_warm_up_steps,
+        max_images
     ):
         self.images_dir = images_dir
         self.steps_grid = steps_grid
@@ -24,6 +26,7 @@ class Evaluator:
         self.clip = clip
         self.seed = seed
         self.num_warm_up_steps = num_warm_up_steps
+        self.max_images = max_images
     
     def evaluate(self, results_path):
         df = pd.DataFrame(columns=['steps', 'avg_score', 'std_score', 'avg_time', 'std_time'])
@@ -34,11 +37,16 @@ class Evaluator:
         for steps in self.steps_grid:
             scores = []
             times = []
-            for image_path in images:
+            for image_path in images[:self.max_images]:
                 image = load_image(image_path)
                 start = time.time()
                 frames = self._generate(image, steps, self.num_warm_up_steps)
                 finish = time.time()
+                filename = image_path.split('/')[-1]
+                image_id_str = filename.split('.')[0]
+                image_id = int(image_id_str)
+                os.makedirs(f'results/{steps}', exist_ok=True)
+                frames[0].save(f'results/{steps}/{image_id}.jpg')
                 times.append(finish - start)
                 scores.append(self.clip.get_score(frames, image_path))
             
@@ -48,9 +56,9 @@ class Evaluator:
             std_time = np.std(times)
 
             df[len(df)] = [steps, avg_score, std_score, avg_time, std_time]
-        
-        self.df.to_csv(results_path)
-        return self.df
+            df.to_csv(results_path)
+
+        return df
     
     def _generate(self, image, num_inference_steps, num_warm_up_steps):
         torch.manual_seed(self.seed)
@@ -67,7 +75,7 @@ class Evaluator:
         images = self._get_images()
         for _ in range(0, 1):
             image = load_image(images[0])
-            self._generate(image, 5, 1)
+            self._generate(image, 50, 1)
         
     def _get_images(self):
         images_dir = Path(self.images_dir)
