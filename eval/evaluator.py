@@ -45,8 +45,10 @@ class Evaluator:
                 filename = image_path.split('/')[-1]
                 image_id_str = filename.split('.')[0]
                 image_id = int(image_id_str)
-                os.makedirs(f'results/{steps}', exist_ok=True)
-                frames[0].save(f'results/{steps}/{image_id}.jpg')
+                os.makedirs(f'results/{steps}/{image_id}', exist_ok=True)
+                for i, frame in enumerate(frames):
+                    frame.save(f'results/{steps}/{image_id}/{i}.jpg')
+                frames[-1].save(f'results/{steps}/{image_id}.jpg')
                 times.append(finish - start)
                 scores.append(self.clip.get_score(frames, image_path))
             

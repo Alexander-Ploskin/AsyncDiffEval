@@ -20,8 +20,8 @@ if __name__ == "__main__":
     parser.add_argument("--scheduler", type=str, choices=['ddpm', 'euler_discrete'])
     parser.add_argument("--max_steps", type=int, default=50)
     parser.add_argument("--max_images", type=int, default=-1)
-    parser.add_argument("--images_dir", type=str, default='coco/images/val2017')
-    parser.add_argument("--annotations_path", type=str, default='coco/images/annotations/captions_val2017.json')
+    parser.add_argument("--images_dir", type=str, default='coco/val2017')
+    parser.add_argument("--annotations_path", type=str, default='coco/annotations/captions_val2017.json')
     parser.add_argument("--results_path", type=str, default='results.csv')
     args = parser.parse_args()
 
