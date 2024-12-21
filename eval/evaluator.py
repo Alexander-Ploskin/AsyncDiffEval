@@ -48,16 +48,18 @@ class Evaluator:
                 os.makedirs(f'results/{steps}/{image_id}', exist_ok=True)
                 for i, frame in enumerate(frames):
                     frame.save(f'results/{steps}/{image_id}/{i}.jpg')
-                frames[-1].save(f'results/{steps}/{image_id}.jpg')
                 times.append(finish - start)
                 scores.append(self.clip.get_score(frames, image_path))
             
-            avg_score = np.mean(scores)
-            std_score = np.std(scores)
-            avg_time = np.mean(times)
-            std_time = np.std(times)
-
-            df[len(df)] = [steps, avg_score, std_score, avg_time, std_time]
+            data = {
+                'steps': steps,
+                'avg_score': np.mean(scores),
+                'std_score': np.std(scores),
+                'avg_time': np.mean(times),
+                'std_time': np.std(times)
+            }
+            new_row = pd.DataFrame([data])
+            df = pd.concat([df, new_row], ignore_index=True)
             df.to_csv(results_path)
 
         return df

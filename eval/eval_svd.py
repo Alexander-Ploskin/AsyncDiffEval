@@ -37,7 +37,8 @@ if __name__ == "__main__":
 
     pipeline = StableVideoDiffusionPipeline.from_pretrained(
         args.model, torch_dtype=torch.float16, 
-        use_safetensors=True, low_cpu_mem_usage=True
+        use_safetensors=True, low_cpu_mem_usage=True,
+        scheduler=scheduler
     )
     if args.model_n == 0:
         async_diff = None
